@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const {User} = require('../model/User');
 const jwtSecret = process.env.jwt_secret;
 async function registerUser(req,res){
+    console.log('Register Request Hit!!');
     try{
         const {username,password} = req.body;
         // check if user already exist
@@ -23,6 +24,7 @@ async function registerUser(req,res){
 }
 
 async function loginUser(req,res){
+    console.log('Login Request Hit!!');
     try{
 
         const {username,password} = req.body;

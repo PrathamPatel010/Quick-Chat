@@ -3,7 +3,7 @@ require('dotenv').config();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const corsOption = {origin:'http://localhost:5173', credentials:true};
+const corsOption = {origin:process.env.frontend_url, credentials:true};
 const {connectDB} = require('./database/connection');
 const authRoutes = require('./routes/authRoutes');
 const PORT = process.env.PORT;
