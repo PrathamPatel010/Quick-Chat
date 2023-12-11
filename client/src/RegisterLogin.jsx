@@ -1,5 +1,6 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import axios from "axios";
+import {UserContext} from "./UserContext.jsx";
 
 const RegisterLogin = () => {
     const [username,setUsername] = useState('');
@@ -7,6 +8,7 @@ const RegisterLogin = () => {
     const [isLogin,setIsLogin] = useState(true);
     const [acknowledgment,setAcknowledgement] = useState('');
 
+    const{setUsername:setLoggedInUsername,setId} = useContext(UserContext);
 
     const handleForm = async(e) => {
         e.preventDefault();
@@ -15,11 +17,13 @@ const RegisterLogin = () => {
         const response = await axios.post(`/api/v1/user/${endPoint}`,{username,password});
         setAcknowledgement(response.data.message);
         if(response.data.status!==200){
-            document.getElementById('ack-div').classList.add('text-red-500');
+            document.getElementById('ack-div').style.color='red';
             setPassword('');
             return;
         }
-        document.getElementById('ack-div').classList.add('text-green-500');
+        document.getElementById('ack-div').style.color='green';
+        setLoggedInUsername(username);
+        setId(response.data.id);
     }
 
     return(
