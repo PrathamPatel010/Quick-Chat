@@ -69,7 +69,7 @@ async function loginUser(req,res){
 
 async function logoutUser(req,res){
     try{
-        const isAuth = req.cookies.token ? true : false;
+        const isAuth = req.cookies.jwt_token ? true : false;
         if(!isAuth){
             return res.json({status:404,message:'No Cookies Found!!'});
         }
