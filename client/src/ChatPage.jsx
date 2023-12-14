@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar.jsx";
 import {UserContext} from "./UserContext.jsx";
 import Logo from "./Logo.jsx";
@@ -12,12 +12,15 @@ const ChatPage = () => {
     const [textMessage,setTextMessage] = useState('');
     const [messages,setMessages] = useState([]);
     const {username,id} = useContext(UserContext);
+    const messageContainerRef = useRef();
 
     useEffect(() => {
         const ws = new WebSocket('ws://localhost:4040');
         setWs(ws);
         ws.addEventListener('message',handleMessage);
     }, []);
+
+
 
 
     function showOnlinePeople(peopleArray){
@@ -61,6 +64,16 @@ const ChatPage = () => {
     }
 
     const formattedMessages = uniqBy(messages,'id');
+    function scrollToBottom(){
+        const container = messageContainerRef.current;
+        if (container){
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [formattedMessages]);
 
     return(
         <>
@@ -99,7 +112,8 @@ const ChatPage = () => {
                     }
                     {
                         (selectedUserId) && (
-                            <div className={'flex flex-col flex-grow overflow-y-scroll'}>
+                            <>
+                            <div className={'flex flex-col flex-grow overflow-y-scroll'} ref={messageContainerRef}>
                                 {formattedMessages.map(message=>{
                                     return(
                                         <div key={message.id} className={' ' + (message.sender===id ? 'text-right' : 'text-left')}>
@@ -110,6 +124,10 @@ const ChatPage = () => {
                                     )
                                 })}
                             </div>
+                            <div>
+
+                            </div>
+                            </>
                         )
                     }
                     {
