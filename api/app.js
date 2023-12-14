@@ -69,7 +69,6 @@ wss.on('connection',(connection,req)=>{
 
     connection.on('message',async(message)=>{
         message = JSON.parse(message.toString());
-        console.log(message);
         const {recipient,text} = message;
         const msg = await Message.create({
             sender:connection.userId,
@@ -78,6 +77,30 @@ wss.on('connection',(connection,req)=>{
         });
         [...wss.clients]
             .filter(c=>c.userId===recipient)
-            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,id:msg._id})));
+            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,_id:msg._id})));
     });
 });
+
+app.get('/api/v1/message/:userId',async(req,res)=>{
+    const {userId} = req.params;
+    const userData = await getUserdata(req);
+    const ourUserId = userData.userId;
+    const messages = await Message.find({
+        sender:{$in:[userId,ourUserId]},
+        recipient:{$in:[userId,ourUserId]},
+    }).sort({createdAt:1});
+    res.json(messages);
+});
+
+async function getUserdata(req){
+    return new Promise((resolve,reject)=>{
+            const {jwt_token} = req.cookies;
+            if (!jwt_token){
+                reject('No JWT Token Found');
+            }
+            jwt.verify(jwt_token,jwtSecret,{},(err,userData)=>{
+            if(err) throw err;
+            resolve(userData);
+        });
+    });
+}
