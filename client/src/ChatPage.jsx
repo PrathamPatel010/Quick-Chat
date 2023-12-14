@@ -84,17 +84,12 @@ const ChatPage = () => {
     }, [formattedMessages]);
 
     function handleScroll(){
-        console.log('scrolled');
         const container = messageContainerRef.current;
         if(container){
             const marginOfError = 1;
             // Check if the scroll is close to the bottom within the margin of error
             const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - marginOfError;
-            if(isAtBottom){
-                setIsScrollAtBottom(true);
-            } else{
-                setIsScrollAtBottom(false);
-            }
+            setIsScrollAtBottom(isAtBottom);
         }
     }
 
@@ -118,10 +113,10 @@ const ChatPage = () => {
                             <div onClick={()=>{
                                 setSelectedUserId(userId);
                                 setSelectedUsername(onlinePeople[userId]);
-                                console.log(onlinePeople[userId])}
-                            } key={userId}
+                            }}
+                            key={userId}
                             className={
-                                "flex items-center cursor-pointer gap-2 border-2 border-gray-300 py-2 pl-2 " + (userId===selectedUserId ? 'bg-blue-300 pl-4' : '')}>
+                                "flex items-center cursor-pointer gap-2 border-2 border-gray-300 p-2 " + (userId===selectedUserId ? 'bg-blue-300 pl-5 pr-0' : '')}>
                                 <Avatar username={onlinePeople[userId]} userId={userId}/>
                                 {onlinePeople[userId]}
                             </div>
@@ -137,7 +132,7 @@ const ChatPage = () => {
                         <button onClick={handleLogout} className={'text-sm rounded text-gray-700 bg-blue-300 py-1 px-2'}>Logout</button>
                     </div>
                 </div>
-                <div className={'flex flex-col bg-blue-200 w-3/4 p-2'}>
+                <div className={'flex flex-col bg-blue-200 w-3/4 p-2 pt-0 pl-0'}>
                     {
                         (!selectedUserId) && (
                             <div className={'flex justify-center items-center h-screen text-gray-500'}>
@@ -162,7 +157,8 @@ const ChatPage = () => {
                                     return(
                                         <div key={message.id} className={' ' + (message.sender===id ? 'text-right' : 'text-left')}>
                                             <div className={'inline-block p-2 m-2 rounded-md text-sm max-w-fit ' + (message.sender===id ? 'bg-green-500 text-black-700' : 'bg-white text-black-700')}>
-                                                {message.text}<br/>
+                                                {message.text}
+                                                <br/>
                                             </div>
                                         </div>
                                     )
@@ -175,8 +171,8 @@ const ChatPage = () => {
                         (selectedUserId) && (
                             <>{
                                 !isScrollAtBottom && (
-                            <div className={'flex justify-end pr-3'}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                            <div className={'flex justify-end pr-3 pb-1 cursor-pointer'}>
+                                <svg onClick={scrollToBottom} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                                     <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-.53 14.03a.75.75 0 001.06 0l3-3a.75.75 0 10-1.06-1.06l-1.72 1.72V8.25a.75.75 0 00-1.5 0v5.69l-1.72-1.72a.75.75 0 00-1.06 1.06l3 3z" clipRule="evenodd" />
                                 </svg>
                             </div>
