@@ -6,6 +6,7 @@ const express = require('express');
 const corsOption = {origin:process.env.frontend_url, credentials:true};
 const {connectDB} = require('./database/connection');
 const authRoutes = require('./routes/authRoutes');
+const Message = require('./model/Message');
 const PORT = process.env.PORT;
 const ws = require('ws');
 const app = express();
@@ -63,5 +64,20 @@ wss.on('connection',(connection,req)=>{
         client.send(JSON.stringify({
             online:[...wss.clients].map(c=>({userId:c.userId,username:c.username}))
         }));
+    });
+
+
+    connection.on('message',async(message)=>{
+        message = JSON.parse(message.toString());
+        const {recipient,text} = message;
+        const msg = await Message.create({
+            sender:connection.userId,
+            recipient,
+            text
+        });
+        [...wss.clients]
+            .filter(c=>c.userId===recipient)
+            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,id:msg._id})));
+        console.log(message);
     });
 });
