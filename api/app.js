@@ -11,6 +11,7 @@ const PORT = process.env.PORT;
 const ws = require('ws');
 const app = express();
 const jwt = require('jsonwebtoken');
+const {User} = require("./model/User");
 const jwtSecret = process.env.jwt_secret;
 
 // Middlewares
@@ -69,7 +70,7 @@ wss.on('connection',(connection,req)=>{
 
     connection.on('message',async(message)=>{
         message = JSON.parse(message.toString());
-        const {recipient,text} = message;
+        const {recipient,text,createdAt} = message;
         const msg = await Message.create({
             sender:connection.userId,
             recipient,
@@ -77,7 +78,7 @@ wss.on('connection',(connection,req)=>{
         });
         [...wss.clients]
             .filter(c=>c.userId===recipient)
-            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,_id:msg._id})));
+            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,_id:msg._id,createdAt:msg.createdAt})));
     });
 });
 
@@ -104,3 +105,8 @@ async function getUserdata(req){
         });
     });
 }
+
+app.get('/api/v1/people',async(req,res)=>{
+    const users = await User.find({},{_id:1,username:1});
+    res.json(users);
+});
