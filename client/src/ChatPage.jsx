@@ -5,6 +5,8 @@ import Logo from "./Logo.jsx";
 import axios from "axios";
 import {uniqBy} from "lodash";
 import {Contact} from "./Contact.jsx";
+import DateTime from "./DateTime.jsx";
+import Message from "./Message.jsx";
 
 const ChatPage = () => {
     const [ws,setWs] = useState(null);
@@ -50,17 +52,20 @@ const ChatPage = () => {
         if('online' in messageData){
             showOnlinePeople(messageData.online);
         } else if('text' in messageData){
+            console.log(messageData);
             setMessages(prevState => ([...prevState,{...messageData}]));
         }
     }
 
     function sendMessage(e){
         e.preventDefault();
+        const createdAt = new Date().toISOString();
         ws.send(JSON.stringify({
             recipient:selectedUserId,
             text:textMessage,
+            createdAt
         }));
-        setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now()}]));
+        setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now(),createdAt:new Date().toISOString()}]));
         setTextMessage('');
     }
 
@@ -181,11 +186,8 @@ const ChatPage = () => {
                             <div onScroll={handleScroll} className={'flex flex-col flex-grow overflow-y-scroll'} ref={messageContainerRef}>
                                 {formattedMessages.map(message=>{
                                     return(
-                                        <div key={message.id} className={' ' + (message.sender===id ? 'text-right' : 'text-left')}>
-                                            <div className={'inline-block p-2 m-2 rounded-md text-sm max-w-fit ' + (message.sender===id ? 'bg-green-500 text-black-700' : 'bg-white text-black-700')}>
-                                                {message.text}
-                                                <br/>
-                                            </div>
+                                        <div key={message._id} className={' ' + (message.sender===id ? 'text-right' : 'text-left')}>
+                                            <Message message={message} id={id}/>
                                         </div>
                                     )
                                 })}
