@@ -11,6 +11,7 @@ const PORT = process.env.PORT;
 const ws = require('ws');
 const app = express();
 const jwt = require('jsonwebtoken');
+const {User} = require("./model/User");
 const jwtSecret = process.env.jwt_secret;
 
 // Middlewares
@@ -104,3 +105,8 @@ async function getUserdata(req){
         });
     });
 }
+
+app.get('/api/v1/people',async(req,res)=>{
+    const users = await User.find({},{_id:1,username:1});
+    res.json(users);
+});

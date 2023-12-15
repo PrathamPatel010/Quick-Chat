@@ -4,15 +4,18 @@ import {UserContext} from "./UserContext.jsx";
 import Logo from "./Logo.jsx";
 import axios from "axios";
 import {uniqBy} from "lodash";
+import {Contact} from "./Contact.jsx";
 
 const ChatPage = () => {
     const [ws,setWs] = useState(null);
     const [onlinePeople,setOnlinePeople] = useState({});
+    const [offlinePeople,setOfflinePeople] = useState({});
     const [selectedUserId,setSelectedUserId] = useState(null);
     const [selectedUsername,setSelectedUsername] = useState('');
     const [textMessage,setTextMessage] = useState('');
     const [messages,setMessages] = useState([]);
     const [isScrollAtBottom,setIsScrollAtBottom] = useState(true);
+    const [isSelectedOnline,setIsSelectedOnline] = useState(false);
     const {username,id} = useContext(UserContext);
     const messageContainerRef = useRef();
     useEffect(() => {
@@ -101,6 +104,18 @@ const ChatPage = () => {
         }
     },[selectedUserId])
 
+    useEffect(()=>{
+        axios.get('/api/v1/people').then((response)=>{
+            const people = response.data.filter(p=>p._id!==id);
+            const offlinePeopleArr = people.filter(p=>!Object.keys(onlinePeople).includes(p._id));
+            const offlinePeople = {};
+            offlinePeopleArr.forEach(p=>{
+                offlinePeople[p._id] = p;
+            });
+            setOfflinePeople(offlinePeople);
+        });
+    },[onlinePeople]);
+
     return(
         <>
             <div className={'flex h-screen'}>
@@ -110,18 +125,28 @@ const ChatPage = () => {
                     {
                         Object.keys(onlinePeople).map((userId)=> {
                             return(
-                            <div onClick={()=>{
-                                setSelectedUserId(userId);
-                                setSelectedUsername(onlinePeople[userId]);
-                            }}
-                            key={userId}
-                            className={
-                                "flex items-center cursor-pointer gap-2 border-2 border-gray-300 p-2 " + (userId===selectedUserId ? 'bg-blue-300 pl-5 pr-0' : '')}>
-                                <Avatar username={onlinePeople[userId]} userId={userId}/>
-                                {onlinePeople[userId]}
-                            </div>
-                            )
-                        })
+                                    <Contact
+                                        key={userId}
+                                        id={userId}
+                                        online={true}
+                                        username={onlinePeople[userId]}
+                                        onClick={()=>{setSelectedUserId(userId);setSelectedUsername(onlinePeople[userId]);setIsSelectedOnline(true);}}
+                                        selected={userId===selectedUserId}
+                                    />
+                            )})
+                    }
+                    {
+                        Object.keys(offlinePeople).map((userId)=> {
+                            return(
+                                <Contact
+                                    key={userId}
+                                    id={userId}
+                                    online={false}
+                                    username={offlinePeople[userId].username}
+                                    onClick={()=>{setSelectedUserId(userId);setSelectedUsername(offlinePeople[userId].username);setIsSelectedOnline(false);}}
+                                    selected={userId===selectedUserId}
+                                />
+                            )})
                     }
                     </div>
                     <div className={'p-2 flex justify-center items-center gap-2 text-center'}>
@@ -149,9 +174,10 @@ const ChatPage = () => {
                                             <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z" clipRule="evenodd" />
                                         </svg>
                                     </div>
-                                    <Avatar username={selectedUsername} userId={selectedUserId}/>
-                                    {selectedUsername}
+                                    <Avatar online={isSelectedOnline} username={selectedUsername} userId={selectedUserId}/>
+                                    <span> {selectedUsername}</span>
                                 </div>
+
                             <div onScroll={handleScroll} className={'flex flex-col flex-grow overflow-y-scroll'} ref={messageContainerRef}>
                                 {formattedMessages.map(message=>{
                                     return(
