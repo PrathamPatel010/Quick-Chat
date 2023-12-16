@@ -12,6 +12,9 @@ const messageSchema = new mongoose.Schema({
     text:{
         type:String,
     },
+    iv:{
+        type:String,
+    }
 },{timestamps:true});
 
 const Message = mongoose.model('Message',messageSchema);
