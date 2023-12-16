@@ -5,7 +5,6 @@ import Logo from "./Logo.jsx";
 import axios from "axios";
 import {uniqBy} from "lodash";
 import {Contact} from "./Contact.jsx";
-import DateTime from "./DateTime.jsx";
 import Message from "./Message.jsx";
 
 const ChatPage = () => {
@@ -52,7 +51,6 @@ const ChatPage = () => {
         if('online' in messageData){
             showOnlinePeople(messageData.online);
         } else if('text' in messageData){
-            console.log(messageData);
             setMessages(prevState => ([...prevState,{...messageData}]));
         }
     }

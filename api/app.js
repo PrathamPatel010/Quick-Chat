@@ -6,6 +6,9 @@ const express = require('express');
 const corsOption = {origin:process.env.frontend_url, credentials:true};
 const {connectDB} = require('./database/connection');
 const authRoutes = require('./routes/authRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const {handleMessage} = require('./controller/messageController');
+const {handleConnection} = require('./controller/wsConnectionController');
 const Message = require('./model/Message');
 const PORT = process.env.PORT;
 const ws = require('ws');
@@ -19,6 +22,7 @@ app.use(cors(corsOption));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/user',authRoutes);
+app.use('/api/v1/message',messageRoutes);
 
 // App Initialization
 async function initApp(){
@@ -40,71 +44,16 @@ app.get('/',(req,res)=>{
 })
 
 // WebSocket Functionality
-const server = app.listen(4040);
+const server = app.listen(process.env.WS_PORT);
 const wss = new ws.WebSocketServer({server});
-wss.on('connection',(connection,req)=>{
-    const cookies = req.headers.cookie;
-    if(!cookies){
-        console.log('No Cookies Found');
-        return;
-    }
-    const tokenString = cookies.split(';').find(str=>str.startsWith('jwt_token='));
-    if(!tokenString){
-        console.log('No JWT Token Found');
-        return;
-    }
-    const jwtToken = tokenString.split('=')[1];
-    jwt.verify(jwtToken,jwtSecret,{},(err,userData)=>{
-        if(err) throw err;
-        const {userId,username} = userData;
-        connection.userId = userId;
-        connection.username = username;
-    });
-
-    [...wss.clients].forEach(client=>{
-        client.send(JSON.stringify({
-            online:[...wss.clients].map(c=>({userId:c.userId,username:c.username}))
-        }));
-    });
-
+wss.on('connection',async(connection,req)=>{
+    await handleConnection(connection,req,wss);
 
     connection.on('message',async(message)=>{
-        message = JSON.parse(message.toString());
-        const {recipient,text,createdAt} = message;
-        const msg = await Message.create({
-            sender:connection.userId,
-            recipient,
-            text
-        });
-        [...wss.clients]
-            .filter(c=>c.userId===recipient)
-            .forEach(c=>c.send(JSON.stringify({text:msg.text,sender:msg.sender,recipient:msg.recipient,_id:msg._id,createdAt:msg.createdAt})));
+        await handleMessage(message,connection,wss);
     });
 });
 
-app.get('/api/v1/message/:userId',async(req,res)=>{
-    const {userId} = req.params;
-    const userData = await getUserdata(req);
-    const ourUserId = userData.userId;
-    const messages = await Message.find({
-        sender:{$in:[userId,ourUserId]},
-        recipient:{$in:[userId,ourUserId]},
-    }).sort({createdAt:1});
-    res.json(messages);
-});
-
-async function getUserdata(req){
-    return new Promise((resolve,reject)=>{
-            const {jwt_token} = req.cookies;
-            if (!jwt_token){
-                reject('No JWT Token Found');
-            }
-            jwt.verify(jwt_token,jwtSecret,{},(err,userData)=>{
-            if(err) throw err;
-            resolve(userData);
-        });
-    });
-}
 
 app.get('/api/v1/people',async(req,res)=>{
     const users = await User.find({},{_id:1,username:1});
