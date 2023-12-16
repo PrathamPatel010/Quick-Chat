@@ -7,7 +7,7 @@ const corsOption = {origin:process.env.frontend_url, credentials:true};
 const {connectDB} = require('./database/connection');
 const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
-const {handleMessage} = require('./controller/messageController');
+const {handleSentMessage} = require('./controller/messageController');
 const {handleConnection} = require('./controller/wsConnectionController');
 const Message = require('./model/Message');
 const PORT = process.env.PORT;
@@ -50,7 +50,7 @@ wss.on('connection',async(connection,req)=>{
     await handleConnection(connection,req,wss);
 
     connection.on('message',async(message)=>{
-        await handleMessage(message,connection,wss);
+        await handleSentMessage(message,connection,wss);
     });
 });
 

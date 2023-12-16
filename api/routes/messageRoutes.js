@@ -1,7 +1,7 @@
 const express = require('express');
-const {sendMessagesForSelectedUser} = require("../controller/messageController");
+const {fetchMessagesForSelectedUser} = require("../controller/messageController");
 const router = express.Router();
 
-router.get('/:userId',sendMessagesForSelectedUser);
+router.get('/:userId',fetchMessagesForSelectedUser);
 
 module.exports = router;
