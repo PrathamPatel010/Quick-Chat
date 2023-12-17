@@ -5,7 +5,7 @@ const Message = ({message,id}) => {
     return(
         <>
             {/* eslint-disable-next-line react/prop-types */}
-            <div style={{width:'50%'}} className={'text-left inline-block break-words px-2 py-1 m-2 rounded-md text-sm max-w-fit ' + (message.sender===id ? 'bg-green-500 text-black-700' : 'bg-white text-black-700')}>
+            <div style={{width:'80%'}} className={'text-left inline-block break-words px-2 py-1 m-2 rounded-md text-sm max-w-fit ' + (message.sender===id ? 'bg-green-500 text-black-700' : 'bg-white text-black-700')}>
                 {/* eslint-disable-next-line react/prop-types */}
                 {message.text}<br/>
                 <div className={'flex items-center'}>
