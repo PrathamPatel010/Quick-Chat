@@ -1,7 +1,7 @@
 import Avatar from "./Avatar.jsx";
 
 // eslint-disable-next-line react/prop-types
-export const Contact = ({onClick,id,username,selected,online}) => {
+const Contact = ({onClick,id,username,selected,online}) => {
     return(
         <div onClick={()=>onClick(id)} key={id}
              className={
@@ -11,3 +11,5 @@ export const Contact = ({onClick,id,username,selected,online}) => {
         </div>
     )
 }
+
+export default Contact;
