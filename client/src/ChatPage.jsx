@@ -184,7 +184,7 @@ const ChatPage = () => {
                                 {formattedMessages.map(message=>{
                                     return(
                                         <div key={message._id} className={' ' + (message.sender===id ? 'text-right' : 'text-left')}>
-                                            <Message message={message} id={id}/>
+                                            <Message iSender={message.sender===id} message={message} id={id}/>
                                         </div>
                                     )
                                 })}
