@@ -1,4 +1,4 @@
-import DateTime from "./DateTime.jsx";
+import DateTime from "./FloatingUtils/DateTime.jsx";
 
 // eslint-disable-next-line react/prop-types
 const Message = ({message,id,iSender}) => {
