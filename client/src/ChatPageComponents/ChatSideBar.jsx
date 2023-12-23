@@ -1,6 +1,6 @@
 // ChatSidebar.jsx
-import Contact from '../Contact.jsx';
-import Logo from '../Logo.jsx';
+import Contact from './Contact.jsx';
+import Logo from './FloatingUtils/Logo.jsx';
 
 // eslint-disable-next-line react/prop-types
 const ChatSidebar = ({ username,logoutFunc ,onlinePeople, offlinePeople, selectedUserId, setSelectedUserId, setSelectedUsername, setIsSelectedOnline }) => {

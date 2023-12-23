@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Message from '../Message.jsx';
+import Message from './Message.jsx';
 
 // eslint-disable-next-line react/prop-types
 const MessageList = ({ scrollToBottom ,formattedMessages, id, handleScroll,messageContainerRef}) => {
