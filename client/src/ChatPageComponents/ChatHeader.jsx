@@ -1,4 +1,4 @@
-import Avatar from './FloatingUtils/Avatar.jsx';
+import Avatar from '../Components/Avatar.jsx';
 
 // eslint-disable-next-line react/prop-types
 const ChatHeader = ({ selectedUserId,selectedUsername, isSelectedOnline, setSelectedUserId }) => {
