@@ -6,7 +6,6 @@ import ChatSidebar from './ChatSidebar';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import { UserContext } from '../UserContext.jsx';
-
 const ChatPage = () => {
     const [ws,setWs] = useState(null);
     const [onlinePeople,setOnlinePeople] = useState({});
@@ -121,13 +120,13 @@ const ChatPage = () => {
 
     return (
         <>
-            <div className="flex h-screen">
+            <div className="lg:flex h-screen">
                 <ChatSidebar username={username} onlinePeople={onlinePeople} offlinePeople={offlinePeople}
                     selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId}
                     setSelectedUsername={setSelectedUsername} setIsSelectedOnline={setIsSelectedOnline}
                     logoutFunc={handleLogout}
                 />
-                <div className="flex flex-col bg-blue-200 w-3/4 p-2 pt-0 pl-0">
+                <div className="flex flex-col bg-blue-200 lg:w-3/4 w-full p-2 pt-0 pl-0">
                     {(!selectedUserId && (
                         <div className="flex justify-center items-center h-screen text-gray-500">
                             Select a person from the side-bar to message

@@ -5,7 +5,7 @@ import Logo from '../Components/Logo.jsx';
 // eslint-disable-next-line react/prop-types
 const ChatSidebar = ({ username,logoutFunc ,onlinePeople, offlinePeople, selectedUserId, setSelectedUserId, setSelectedUsername, setIsSelectedOnline }) => {
     return (
-        <div className="bg-blue-100 flex flex-col w-1/4 p-2">
+        <div className="bg-blue-100 flex flex-col lg:w-1/4 p-2">
             <div className="flex-grow">
                 <Logo />
                 {Object.keys(onlinePeople).map((userId) => (
