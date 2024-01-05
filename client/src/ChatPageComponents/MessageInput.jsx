@@ -3,14 +3,14 @@
 // eslint-disable-next-line react/prop-types
 const MessageInput = ({ sendMessage, textMessage, setTextMessage }) => {
     return (
-        <form onSubmit={sendMessage} className="flex gap-1 mx-1">
+        <form onSubmit={sendMessage} className="sticky bottom-0 flex justify-evenly mx-1">
             <>
             <input
                 value={textMessage}
                 onChange={(e) => setTextMessage(e.target.value)}
                 type="text"
                 placeholder="Type Your Message"
-                className="flex-grow bg-[#1f1f1f] text-white border-none p-1 rounded"
+                className="w-full bg-[#1f1f1f] text-white border-none p-1 rounded"
                 required={true}
             />
             <button style={{backgroundColor:'#2b2824'}} type="submit" className="p-1 text-white rounded-sm">
