@@ -8,7 +8,7 @@ const MessageDate = ({ timestamp,isSender}) => {
 
     const localDateString = format(date, 'dd/MM/yyyy');
     return (
-        <div className={'flex text-[0.7rem] gap-1.5 ' + (isSender ? 'text-purple-700' : 'text-gray-400')}>
+        <div className={'flex text-[0.7rem] gap-1.5 text-[#686868] ' + (isSender ? '' : '')}>
             <span>{localDateString}</span>
             <span>{localTimeString}</span>
         </div>

@@ -126,7 +126,7 @@ const ChatPage = () => {
                     setSelectedUsername={setSelectedUsername} setIsSelectedOnline={setIsSelectedOnline}
                     logoutFunc={handleLogout}
                 />
-                <div className="flex flex-col bg-blue-200 lg:w-3/4 w-full p-2 pt-0 pl-0">
+                <div className="flex flex-col bg-[#181818] lg:w-3/4 w-full p-2 pt-0 pl-0">
                     {(!selectedUserId && (
                         <div className="flex justify-center items-center h-screen text-gray-500">
                             Select a person from the side-bar to message
@@ -140,9 +140,9 @@ const ChatPage = () => {
                             {selectedUserId && (
                                 <>
                                     {!isScrollAtBottom && (
-                                        <div className="flex justify-end pr-3 pb-1 cursor-pointer">
+                                        <div className="flex bg-[] justify-end pr-3 pb-1 cursor-pointer">
                                             <svg style={{ opacity: 0.8 }} onClick={scrollToBottom} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                                                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-.53 14.03a.75.75 0 001.06 0l3-3a.75.75 0 10-1.06-1.06l-1.72 1.72V8.25a.75.75 0 00-1.5 0v5.69l-1.72-1.72a.75.75 0 00-1.06 1.06l3 3z" clipRule="evenodd" />
+                                                <path fill={'white'} fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-.53 14.03a.75.75 0 001.06 0l3-3a.75.75 0 10-1.06-1.06l-1.72 1.72V8.25a.75.75 0 00-1.5 0v5.69l-1.72-1.72a.75.75 0 00-1.06 1.06l3 3z" clipRule="evenodd" />
                                             </svg>
                                         </div>
                                     )}

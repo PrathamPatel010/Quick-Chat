@@ -30,8 +30,13 @@ async function registerUser(req,res){
         // if not, hash the password & register the user
         const hashedPassword = await bcrypt.hash(password,10);
         const response = await User.create({username,password:hashedPassword});
-        console.log(response);
-        res.json({status:200,message:'User Registered Successfully!!',id:response._id});
+        jwt.sign({userId:response._id,username},jwtSecret,{},(err,token)=>{
+            if(err){
+                console.log(err);
+                return;
+            }
+            res.cookie('jwt_token',token,{httpOnly:false,secure:true,sameSite:'none'}).json({status:200,message:'Success!!',id:response._id});
+        })
     } catch (err){
         console.log(err.message);
     }

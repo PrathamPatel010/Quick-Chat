@@ -4,7 +4,13 @@ export default {
       "./src/*.jsx"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors:{
+        'dark-bg':'#181818',
+        'receiver-bg':'#2f2f2f',
+        'sender-msg':'#222222'
+      }
+    },
   },
   plugins: [],
 }
