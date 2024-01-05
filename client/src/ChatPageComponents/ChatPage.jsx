@@ -6,7 +6,9 @@ import ChatSidebar from './ChatSidebar';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import { UserContext } from '../UserContext.jsx';
+import {useMediaQuery} from "react-responsive";
 const ChatPage = () => {
+    const isSmallScreen = useMediaQuery({query:'(max-width: 1000px)'});
     const [ws,setWs] = useState(null);
     const [onlinePeople,setOnlinePeople] = useState({});
     const [offlinePeople,setOfflinePeople] = useState({});
@@ -121,21 +123,34 @@ const ChatPage = () => {
     return (
         <>
             <div className="lg:flex h-screen">
-                <ChatSidebar username={username} onlinePeople={onlinePeople} offlinePeople={offlinePeople}
-                    selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId}
-                    setSelectedUsername={setSelectedUsername} setIsSelectedOnline={setIsSelectedOnline}
-                    logoutFunc={handleLogout}
-                />
-                <div className="flex flex-col bg-[#181818] lg:w-3/4 w-full p-2 pt-0 pl-0">
-                    {(!selectedUserId && (
-                        <div className="flex justify-center items-center h-screen text-gray-500">
-                            Select a person from the side-bar to message
+                {
+                    (isSmallScreen && !selectedUserId) && (
+                        <ChatSidebar username={username} onlinePeople={onlinePeople} offlinePeople={offlinePeople}
+                            selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId}
+                            setSelectedUsername={setSelectedUsername} setIsSelectedOnline={setIsSelectedOnline}
+                            logoutFunc={handleLogout}
+                        />
+                    )
+                }
+                {
+                    !isSmallScreen && (
+                        <ChatSidebar username={username} onlinePeople={onlinePeople} offlinePeople={offlinePeople}
+                                     selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId}
+                                     setSelectedUsername={setSelectedUsername} setIsSelectedOnline={setIsSelectedOnline}
+                                     logoutFunc={handleLogout}
+                        />
+                    )
+                }
+                <div className={`flex flex-col bg-[#181818] ${isSmallScreen ? 'min-w-full' : 'lg:w-3/4'} p-2 pt-0 pl-0`}>
+                {(!selectedUserId && (
+                        <div className={`flex justify-center items-center ${isSmallScreen ? 'h-10 ' :'h-screen '} text-gray-500`}>
+                            Select a person {isSmallScreen ? ' to message ' : ' from the side-bar to message'}
                         </div>
                     ))}
                     {selectedUserId && (
                         <>
                             <ChatHeader selectedUserId={selectedUserId} selectedUsername={selectedUsername} isSelectedOnline={isSelectedOnline} setSelectedUserId={setSelectedUserId} />
-                            <MessageList scrollToBottom={scrollToBottom} handleScroll={handleScroll} id={id}
+                            <MessageList isSmallScreen={isSmallScreen} scrollToBottom={scrollToBottom} handleScroll={handleScroll} id={id}
                                          formattedMessages={formattedMessages} messageContainerRef={messageContainerRef} />
                             {selectedUserId && (
                                 <>
