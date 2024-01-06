@@ -21,6 +21,14 @@ const messageSchema = new mongoose.Schema({
     originalFileName:{
         type:String,
     },
+    delivered:{
+        type:Boolean,
+        default:false,
+    },
+    read:{
+        type:Boolean,
+        default:false,
+    }
 },{timestamps:true});
 
 const Message = mongoose.model('Message',messageSchema);

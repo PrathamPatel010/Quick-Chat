@@ -26,6 +26,12 @@ async function fetchMessagesForSelectedUser(req,res){
         recipient:{$in:[userId,ourUserId]},
     }).sort({createdAt:1});
 
+    for (message of encryptedMessages){
+        if (!message.read && message.recipient.toString()===ourUserId){
+            await Message.findByIdAndUpdate(message._id,{read:true},{new:false});
+        }
+    }
+
     const decryptedMessages = encryptedMessages.map((message) => ({
         ...message.toObject(),
         text:decrypt({iv: message.iv, encryptedText: message.text})
@@ -59,6 +65,7 @@ async function handleSentMessage(message,connection,wss){
         iv:encryptedData.iv,
         file: file ? filename : null,
         originalFileName:file? file.name : null,
+        delivered:true,
     });
     [...wss.clients]
         .filter(c=>c.userId===recipient)
@@ -70,6 +77,7 @@ async function handleSentMessage(message,connection,wss){
             createdAt:messageDocument.createdAt,
             file: file?filename:null,
             originalFileName: file ? file.name : null,
+            delivered:true,
         })));
 }
 
