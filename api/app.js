@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/user',authRoutes);
 app.use('/api/v1/message',messageRoutes);
+app.use('/uploads', express.static(__dirname + '/controller/uploads'));
 
 // App Initialization
 async function initApp(){

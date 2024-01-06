@@ -14,7 +14,13 @@ const messageSchema = new mongoose.Schema({
     },
     iv:{
         type:String,
-    }
+    },
+    file:{
+        type:String,
+    },
+    originalFileName:{
+        type:String,
+    },
 },{timestamps:true});
 
 const Message = mongoose.model('Message',messageSchema);
