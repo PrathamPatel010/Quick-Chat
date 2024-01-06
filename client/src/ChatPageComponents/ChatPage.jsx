@@ -69,7 +69,7 @@ const ChatPage = () => {
             const res = await axios.get(`/api/v1/message/${selectedUserId}`);
             setMessages(res.data);
         } else{
-            setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now(),createdAt:new Date().toISOString()}]));
+            setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now(),createdAt:new Date().toISOString(),delivered:true}]));
             setTextMessage('');
         }
     }

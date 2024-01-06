@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const {encrypt, decrypt} = require("./encryptionController");
 const jwtSecret = process.env.jwt_secret;
 const fs = require('fs');
-
+const path = require('path');
 async function getUserdata(req){
     return new Promise((resolve,reject)=>{
         const {jwt_token} = req.cookies;
@@ -26,6 +26,12 @@ async function fetchMessagesForSelectedUser(req,res){
         recipient:{$in:[userId,ourUserId]},
     }).sort({createdAt:1});
 
+    for (message of encryptedMessages){
+        if (!message.read && message.recipient.toString()===ourUserId){
+            await Message.findByIdAndUpdate(message._id,{read:true},{new:false});
+        }
+    }
+
     const decryptedMessages = encryptedMessages.map((message) => ({
         ...message.toObject(),
         text:decrypt({iv: message.iv, encryptedText: message.text})
@@ -38,7 +44,7 @@ async function handleSentMessage(message,connection,wss){
     message = JSON.parse(message.toString());
     const {recipient,text,file} = message;
     let filename=null;
-    console.log(text);  // intentionally putting here..
+    await logToTextFile(message,text);
     const encryptedData = encrypt(text);
     const decryptedData = decrypt(encryptedData);
 
@@ -59,6 +65,7 @@ async function handleSentMessage(message,connection,wss){
         iv:encryptedData.iv,
         file: file ? filename : null,
         originalFileName:file? file.name : null,
+        delivered:true,
     });
     [...wss.clients]
         .filter(c=>c.userId===recipient)
@@ -70,7 +77,15 @@ async function handleSentMessage(message,connection,wss){
             createdAt:messageDocument.createdAt,
             file: file?filename:null,
             originalFileName: file ? file.name : null,
+            delivered:true,
         })));
+}
+
+const logToTextFile = async(message,text,connection) => {
+    const filePath = path.join(__dirname,'../','message_logs.txt');
+    fs.appendFile(filePath,`Receiver-ID:${message.recipient} Text:${message.text} Created At:${message.createdAt} \n`,{},(err)=>{
+        if (err) console.log(err.message);
+    });
 }
 
 module.exports = {handleSentMessage,fetchMessagesForSelectedUser};
