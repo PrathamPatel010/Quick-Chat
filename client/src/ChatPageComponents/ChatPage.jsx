@@ -56,16 +56,22 @@ const ChatPage = () => {
         }
     }
 
-    function sendMessage(e){
-        e.preventDefault();
+    async function sendMessage(e,file=null){
+        if(e) e.preventDefault();
         const createdAt = new Date().toISOString();
         ws.send(JSON.stringify({
             recipient:selectedUserId,
             text:textMessage,
-            createdAt
+            createdAt,
+            file
         }));
-        setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now(),createdAt:new Date().toISOString()}]));
-        setTextMessage('');
+        if (file){
+            const res = await axios.get(`/api/v1/message/${selectedUserId}`);
+            setMessages(res.data);
+        } else{
+            setMessages(prevState => ([...prevState,{text:textMessage,sender:id,recipient:selectedUserId,_id:Date.now(),createdAt:new Date().toISOString()}]));
+            setTextMessage('');
+        }
     }
 
     async function handleLogout(){
