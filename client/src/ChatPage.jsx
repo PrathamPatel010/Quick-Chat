@@ -28,7 +28,7 @@ const ChatPage = () => {
 
 
     function connectToWS(){
-        const ws = new WebSocket(`${protocol}${host}:4040`);
+        const ws = new WebSocket(`${protocol}${host}`);
         setWs(ws);
         ws.addEventListener('message',handleMessage);
         ws.addEventListener('close',()=>{
