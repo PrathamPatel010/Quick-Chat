@@ -8,6 +8,8 @@ import MessageInput from './Components/MessageInput.jsx';
 import { UserContext } from './UserContext.jsx';
 import {useMediaQuery} from "react-responsive";
 const ChatPage = () => {
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    const host = import.meta.env.VITE_HOST_URL;
     const isSmallScreen = useMediaQuery({query:'(max-width: 1000px)'});
     const [ws,setWs] = useState(null);
     const [onlinePeople,setOnlinePeople] = useState({});
@@ -26,7 +28,7 @@ const ChatPage = () => {
 
 
     function connectToWS(){
-        const ws = new WebSocket('ws://localhost:4040');
+        const ws = new WebSocket(`${protocol}${host}:4040`);
         setWs(ws);
         ws.addEventListener('message',handleMessage);
         ws.addEventListener('close',()=>{
