@@ -1,11 +1,11 @@
 import {useContext, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import { uniqBy } from 'lodash';
-import ChatHeader from './ChatHeader';
-import ChatSidebar from './ChatSidebar';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
-import { UserContext } from '../UserContext.jsx';
+import ChatHeader from './Components/ChatHeader.jsx';
+import ChatSidebar from './Components/ChatSideBar.jsx';
+import MessageList from './Components/MessageList.jsx';
+import MessageInput from './Components/MessageInput.jsx';
+import { UserContext } from './UserContext.jsx';
 import {useMediaQuery} from "react-responsive";
 const ChatPage = () => {
     const isSmallScreen = useMediaQuery({query:'(max-width: 1000px)'});

@@ -1,4 +1,4 @@
-import DateTime from "../Components/DateTime.jsx";
+import DateTime from "./DateTime.jsx";
 import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
