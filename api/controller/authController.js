@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const {User} = require('../model/User');
 const jwtSecret = process.env.jwt_secret;
+const sendMail = require('../services/EmailService/emailService');
 
 async function getUserProfile(req,res){
     const {jwt_token} = req.cookies;
@@ -17,30 +18,48 @@ async function getUserProfile(req,res){
         }
     })
 }
+
+let tempOTP=0;
+let tempUsername='template';
+let tempPassword='template';
 async function registerUser(req,res){
     console.log('Register Request Hit!!');
     try{
-        const {username,password} = req.body;
+        const {username,password,email} = req.body;
+        const emailPattern = /^\d{14}@mbit\.edu\.in$/;
+        if (!emailPattern.test(email)){
+            return res.json({status:400, message:'Please enter correct college email'});
+        }
         // check if user already exist
         const user = await User.findOne({username});
         if(user){
             return res.json({status:429,message:'User Already Exist! You need to login!!'});
         }
-
-        // if not, hash the password & register the user
-        const hashedPassword = await bcrypt.hash(password,10);
-        const response = await User.create({username,password:hashedPassword});
-        jwt.sign({userId:response._id,username},jwtSecret,{},(err,token)=>{
-            if(err){
-                console.log(err);
-                return;
-            }
-            res.cookie('jwt_token',token,{httpOnly:false,secure:true,sameSite:'none'}).json({status:200,message:'Success!!',id:response._id});
-        })
+        const emailResponse = await sendMail(req,res,email);
+        tempOTP=emailResponse.OTP;
+        tempUsername=username;
+        tempPassword=password;
+        return res.json({status:200,message:'OTP sent to your email ID'});
     } catch (err){
         console.log(err.message);
     }
 }
+
+const verifyOTP = async (req,res) => {
+    const OTPGot=req.body.otp;
+    if (Number(OTPGot)!==Number(tempOTP)){
+        return res.json({status:401,message:'Wrong OTP!!'});
+    }
+    const hashedPassword = await bcrypt.hash(tempPassword,10);
+    const response = await User.create({username:tempUsername,password:hashedPassword});
+    jwt.sign({userId:response._id,username:response.username},jwtSecret,{},(err,token)=>{
+        if(err){
+            console.log(err);
+            return;
+        }
+        res.cookie('jwt_token',token,{httpOnly:false,secure:true,sameSite:'none'}).json({status:200,message:'Success!!',id:response._id});
+    });
+};
 
 async function loginUser(req,res){
     console.log('Login Request Hit!!');
@@ -84,4 +103,4 @@ async function logoutUser(req,res){
     }
 }
 
-module.exports = {registerUser,loginUser,logoutUser,getUserProfile};
+module.exports = {registerUser,loginUser,logoutUser,getUserProfile,verifyOTP};
