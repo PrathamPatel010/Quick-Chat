@@ -3,12 +3,15 @@ import axios from "axios";
 import {UserContext} from "./UserContext.jsx";
 
 const RegisterLogin = () => {
+    const [email,setEmail] = useState('');
     const [username,setUsername] = useState('');
     const [password,setPassword] = useState('');
     const [isLogin,setIsLogin] = useState(true);
     const [acknowledgment,setAcknowledgement] = useState('');
     const [isPasswordVisible,setIsPasswordVisible] = useState(false);
-    const{setUsername:setLoggedInUsername,setId} = useContext(UserContext);
+    const [otp,setOtp] = useState('');
+    const [showOTP,setShowOTP] = useState(false);
+    const {setUsername:setLoggedInUsername,setId} = useContext(UserContext);
 
 
     const togglePassword = () => {
@@ -18,7 +21,7 @@ const RegisterLogin = () => {
     const handleForm = async(e) => {
         e.preventDefault();
         const endPoint = (isLogin) ? 'login' : 'register';
-        const response = await axios.post(`/api/v1/user/${endPoint}`,{username,password});
+        const response = await axios.post(`/api/v1/user/${endPoint}`,{username,password,email});
         setAcknowledgement(response.data.message);
         if(response.data.status!==200){
             document.getElementById('ack-div').style.color='red';
@@ -26,6 +29,19 @@ const RegisterLogin = () => {
             return;
         }
         document.getElementById('ack-div').style.color='green';
+        if(isLogin){
+            setLoggedInUsername(username);
+            setId(response.data.id);
+        }
+        setShowOTP(true);
+    }
+
+    const handleOTPForm = async () => {
+        const response = await axios.post('/api/v1/user/verify/otp',{otp});
+        if (response.data.status!==200){
+            setAcknowledgement(response.data.message);
+            return;
+        }
         setLoggedInUsername(username);
         setId(response.data.id);
     }
@@ -42,6 +58,12 @@ const RegisterLogin = () => {
 
             <section className={'form'}>
                 <form onSubmit={handleForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
+                    {
+                        !isLogin && (
+                    <input value={email} onChange={(e)=>{setEmail(e.target.value);setAcknowledgement('')}}
+                           className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'email'} placeholder={'College Mail ID'} required={true} autoComplete={'email'}/>
+                        )
+                    }
                     <input value={username} onChange={(e)=>{setUsername(e.target.value);setAcknowledgement('');}}
                            className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'text'} placeholder={'Username'} required={true} autoComplete={'username'}/>
                     <div className={'bg-[#3b393e] border-2 border-white flex gap-1 rounded-sm justify-between items-center mt-3 p-1'}>
@@ -77,13 +99,13 @@ const RegisterLogin = () => {
                                 Don't have account yet? Sign-up Here
                                 </button>
                             </>
-                        ) : (
+                        ) : (!showOTP && (
                             <>
                                 <button className={'no-underline bg-[#e3ae3e] py-1 px-2 rounded-md text-white hover:text-black'} type={'button'} onClick={()=>{setUsername('');setPassword('');setAcknowledgement('');setIsLogin(!isLogin)}}>
                                 Already a user? <br></br> Login Here
                                 </button>
                             </>
-                        )
+                        ))
                     }
                 </div>
                     {
@@ -95,6 +117,15 @@ const RegisterLogin = () => {
                         )
                     }
                 </form>
+                {
+                    (!isLogin && showOTP) && (
+                        <form onSubmit={handleOTPForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
+                            <input value={otp} onChange={(e)=>{setOtp(e.target.value);}}
+                                className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'number'} placeholder={'College Mail ID'} required={true} autoComplete={'number'}/>
+                            <button type={'submit'}>Verify OTP</button>
+                        </form>
+                    )
+                }
             </section>
         </>
     )
