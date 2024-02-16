@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext, useState, useEffect} from "react";
 import axios from "axios";
 import {UserContext} from "./UserContext.jsx";
 
@@ -57,73 +57,90 @@ const RegisterLogin = () => {
             </section>
 
             <section className={'form'}>
-                <form onSubmit={handleForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
-                    {
-                        !isLogin && (
-                    <input value={email} onChange={(e)=>{setEmail(e.target.value);setAcknowledgement('')}}
-                           className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'email'} placeholder={'College Mail ID'} required={true} autoComplete={'email'}/>
-                        )
-                    }
-                    <input value={username} onChange={(e)=>{setUsername(e.target.value);setAcknowledgement('');}}
-                           className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'text'} placeholder={'Username'} required={true} autoComplete={'username'}/>
-                    <div className={'bg-[#3b393e] border-2 border-white flex gap-1 rounded-sm justify-between items-center mt-3 p-1'}>
-                        <input id={'password'} value={password} onChange={(e)=>{setPassword(e.target.value);setAcknowledgement('');}}
-                               className={'text-[#ffe6a7] bg-[#3b393e] border-white block w-full'} type={isPasswordVisible ? 'text' : 'password'} placeholder={'Password'} required={true} autoComplete={'current-password'}/>
-                        {
-                            isPasswordVisible ? (
-                                <svg onClick={togglePassword} className={"text-white w-5 h-5 cursor-pointer"} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 00-1.06 1.06l14.5 14.5a.75.75 0 101.06-1.06l-1.745-1.745a10.029 10.029 0 003.3-4.38 1.651 1.651 0 000-1.185A10.004 10.004 0 009.999 3a9.956 9.956 0 00-4.744 1.194L3.28 2.22zM7.752 6.69l1.092 1.092a2.5 2.5 0 013.374 3.373l1.091 1.092a4 4 0 00-5.557-5.557z" clipRule="evenodd" />
-                                    <path d="M10.748 13.93l2.523 2.523a9.987 9.987 0 01-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 010-1.186A10.007 10.007 0 012.839 6.02L6.07 9.252a4 4 0 004.678 4.678z" />
-                                </svg>
+                {
+                    !showOTP && (
+                        <form onSubmit={handleForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
+                            {
+                                !isLogin && (
+                            <input value={email} onChange={(e)=>{setEmail(e.target.value);setAcknowledgement('')}}
+                                   className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'email'} placeholder={'College Mail ID'} required={true} autoComplete={'email'}/>
+                                )
+                            }
+                            <input value={username} onChange={(e)=>{setUsername(e.target.value);setAcknowledgement('');}}
+                                   className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'text'} placeholder={'Username'} required={true} autoComplete={'username'}/>
+                            <div className={'bg-[#3b393e] border-2 border-white flex gap-1 rounded-sm justify-between items-center mt-3 p-1'}>
+                                <input id={'password'} value={password} onChange={(e)=>{setPassword(e.target.value);setAcknowledgement('');}}
+                                       className={'text-[#ffe6a7] bg-[#3b393e] border-white block w-full'} type={isPasswordVisible ? 'text' : 'password'} placeholder={'Password'} required={true} autoComplete={'current-password'}/>
+                                {
+                                    isPasswordVisible ? (
+                                        <svg onClick={togglePassword} className={"text-white w-5 h-5 cursor-pointer"} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M3.28 2.22a.75.75 0 00-1.06 1.06l14.5 14.5a.75.75 0 101.06-1.06l-1.745-1.745a10.029 10.029 0 003.3-4.38 1.651 1.651 0 000-1.185A10.004 10.004 0 009.999 3a9.956 9.956 0 00-4.744 1.194L3.28 2.22zM7.752 6.69l1.092 1.092a2.5 2.5 0 013.374 3.373l1.091 1.092a4 4 0 00-5.557-5.557z" clipRule="evenodd" />
+                                            <path d="M10.748 13.93l2.523 2.523a9.987 9.987 0 01-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 010-1.186A10.007 10.007 0 012.839 6.02L6.07 9.252a4 4 0 004.678 4.678z" />
+                                        </svg>
 
-                            ) : (
-                                <svg onClick={togglePassword} className="text-[#ffe6a7] w-5 h-5 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                                    <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                                </svg>
-                            )
-                        }
-                    </div>
-                    <button className={'mt-5 py-1 block w-full rounded-md border-2 border-white bg-blue-500 hover:bg-[#3b393e] text-white'} type={'submit'}>
-                        {isLogin ? ('Login') : ('Register')}
-                    </button>
-                <div id={'ack-div'} className={'py-2 text-white text-center'}>
-                    {acknowledgment}
-                </div>
-                <div className={'text-center text-white'}>
-                    {
-                        (isLogin) ? (
-                            <>
-                                <button className={'no-underline bg-[#e3ae3e] py-1 px-2 rounded-md text-white hover:text-black'} type={'button'} onClick={()=>{setUsername('');setPassword('');setAcknowledgement('');setIsLogin(!isLogin)}}>
-                                {/* eslint-disable-next-line react/no-unescaped-entities */}
-                                Don't have account yet? Sign-up Here
-                                </button>
-                            </>
-                        ) : (!showOTP && (
-                            <>
-                                <button className={'no-underline bg-[#e3ae3e] py-1 px-2 rounded-md text-white hover:text-black'} type={'button'} onClick={()=>{setUsername('');setPassword('');setAcknowledgement('');setIsLogin(!isLogin)}}>
-                                Already a user? <br></br> Login Here
-                                </button>
-                            </>
-                        ))
-                    }
-                </div>
-                    {
-                        isLogin && (
-                            <div className={'text-xs text-center flex justify-center items-center mt-2 text-white'}>
-                                Test User-1:Coder1, password:coder123<br></br>
-                                Test User-2:Coder2, password:coder321
+                                    ) : (
+                                        <svg onClick={togglePassword} className="text-[#ffe6a7] w-5 h-5 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                                            <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                                        </svg>
+                                    )
+                                }
                             </div>
-                        )
-                    }
-                </form>
+                            <button className={'mt-5 py-1 block w-full rounded-md border-2 border-white bg-blue-500 hover:bg-[#3b393e] text-white'} type={'submit'}>
+                                {isLogin ? ('Login') : ('Register')}
+                            </button>
+                            {
+                                !isLogin && (
+                                    <big className={'text-red-600'}> Note:It is recommended to not use your real name.
+                                    </big>
+                                )
+                            }
+                        <div id={'ack-div'} className={'py-2 text-white text-center'}>
+                            {acknowledgment}
+                        </div>
+                        <div className={'text-center text-white'}>
+                            {
+                                (isLogin) ? (
+                                    <>
+                                        <button className={'no-underline bg-[#e3ae3e] py-1 px-2 rounded-md text-white hover:text-black'} type={'button'} onClick={()=>{setUsername('');setPassword('');setAcknowledgement('');setIsLogin(!isLogin)}}>
+                                        {/* eslint-disable-next-line react/no-unescaped-entities */}
+                                        Don't have account yet? Sign-up Here
+                                        </button>
+                                    </>
+                                ) : (!showOTP && (
+                                    <>
+                                        <button className={'no-underline bg-[#e3ae3e] py-1 px-2 rounded-md text-white hover:text-black'} type={'button'} onClick={()=>{setUsername('');setPassword('');setAcknowledgement('');setIsLogin(!isLogin)}}>
+                                        Already a user? <br></br> Login Here
+                                        </button>
+                                    </>
+                                ))
+                            }
+                        </div>
+                            {
+                                isLogin && (
+                                    <div className={'text-xs text-center flex justify-center items-center mt-2 text-white'}>
+                                        Test User-1:Coder1, password:coder123<br></br>
+                                        Test User-2:Coder2, password:coder321
+                                    </div>
+                                )
+                            }
+                        </form>
+                    )
+                }
                 {
                     (!isLogin && showOTP) && (
-                        <form onSubmit={handleOTPForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
-                            <input value={otp} onChange={(e)=>{setOtp(e.target.value);}}
-                                className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'number'} placeholder={'College Mail ID'} required={true} autoComplete={'number'}/>
-                            <button type={'submit'}>Verify OTP</button>
-                        </form>
+                        <>
+                            <div id={'ack-div'} className={'py-2 text-white text-center'}>
+                                {acknowledgment}
+                            </div>
+                            <form onSubmit={handleOTPForm} className={'flex-col justify-center text-center w-64 mx-auto px-3'}>
+                                <input value={otp} onChange={(e)=>{setOtp(e.target.value);}}
+                                    className={'text-[#ffe6a7] bg-[#3b393e] border-2 border-white block w-full rounded-sm p-1 mt-2'} type={'number'} placeholder={'OTP'} required={true} autoComplete={'number'}/>
+                                <button
+                                    className={'mt-5 py-1 block w-full rounded-md border-2 border-white bg-blue-500 hover:bg-[#3b393e] text-white'}
+                                    type={'submit'}>Verify OTP</button>
+                            </form>
+                        </>
                     )
                 }
             </section>
