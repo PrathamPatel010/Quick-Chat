@@ -6,37 +6,43 @@ const jwtSecret = process.env.jwt_secret;
 const sendMail = require('../services/EmailService/emailService');
 
 async function getUserProfile(req,res){
-    const {jwt_token} = req.cookies;
-    if(!jwt_token){
-        return res.json({status:404,message:'No Token Found!!'});
-    }
-    jwt.verify(jwt_token,jwtSecret,{},(err,data)=>{
-        if(err){
-            throw err;
-        } else{
-            res.json(data);
+    try{
+        const {jwt_token} = req.cookies;
+        if(!jwt_token){
+            return res.json({status:404,message:'No Token Found!!'});
         }
-    })
+        jwt.verify(jwt_token,jwtSecret,{},(err,data)=>{
+            if(err){
+                throw err;
+            } else{
+                res.json(data);
+            }
+        })
+    } catch (err){
+        console.log(err.message);
+    }
 }
 
 let tempOTP=0;
 let tempUsername='template';
 let tempPassword='template';
+let tempEmail='template';
 async function registerUser(req,res){
-    console.log('Register Request Hit!!');
     try{
         const {username,password,email} = req.body;
-        const emailPattern = /^\d{14}@mbit\.edu\.in$/;
-        if (!emailPattern.test(email)){
-            return res.json({status:400, message:'Please enter correct college email'});
-        }
         // check if user already exist
         const user = await User.findOne({username});
         if(user){
             return res.json({status:429,message:'User Already Exist! You need to login!!'});
         }
+
+        const emailPattern = /^\d{14}@mbit\.edu\.in$/;
+        if (!emailPattern.test(email)){
+            return res.json({status:400, message:'Please enter correct college email'});
+        }
         const emailResponse = await sendMail(req,res,email);
         tempOTP=emailResponse.OTP;
+        tempEmail=email;
         tempUsername=username;
         tempPassword=password;
         return res.json({status:200,message:'OTP sent to your email ID'});
@@ -46,25 +52,27 @@ async function registerUser(req,res){
 }
 
 const verifyOTP = async (req,res) => {
-    const OTPGot=req.body.otp;
-    if (Number(OTPGot)!==Number(tempOTP)){
-        return res.json({status:401,message:'Wrong OTP!!'});
-    }
-    const hashedPassword = await bcrypt.hash(tempPassword,10);
-    const response = await User.create({username:tempUsername,password:hashedPassword});
-    jwt.sign({userId:response._id,username:response.username},jwtSecret,{},(err,token)=>{
-        if(err){
-            console.log(err);
-            return;
+    try{
+        const OTPGot=req.body.otp;
+        if (Number(OTPGot)!==Number(tempOTP)){
+            return res.json({status:401,message:'Wrong OTP!!'});
         }
-        res.cookie('jwt_token',token,{httpOnly:false,secure:true,sameSite:'none'}).json({status:200,message:'Success!!',id:response._id});
-    });
+        const hashedPassword = await bcrypt.hash(tempPassword,10);
+        const response = await User.create({email: tempEmail,username:tempUsername,password:hashedPassword});
+        jwt.sign({userId:response._id,username:response.username},jwtSecret,{},(err,token)=>{
+            if(err){
+                console.log(err);
+                return;
+            }
+            res.cookie('jwt_token',token,{httpOnly:false,secure:true,sameSite:'none'}).json({status:200,message:'Success!!',id:response._id});
+        });
+    } catch (err){
+        console.log(err.message);
+    }
 };
 
 async function loginUser(req,res){
-    console.log('Login Request Hit!!');
     try{
-
         const {username,password} = req.body;
 
         // check if user exist or not
