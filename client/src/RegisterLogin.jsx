@@ -119,8 +119,8 @@ const RegisterLogin = () => {
                             {
                                 isLogin && (
                                     <div className={'text-xs text-center flex justify-center items-center mt-2 text-white'}>
-                                        Test User-1:Coder1, password:coder123<br></br>
-                                        Test User-2:Coder2, password:coder321
+                                        Test User-1:BackendDev, password:Coder140<br></br>
+                                        Test User-2:UIGuy, password:Des177
                                     </div>
                                 )
                             }
