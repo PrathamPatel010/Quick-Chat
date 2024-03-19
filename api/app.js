@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const express = require('express');
 const corsOption = {origin:process.env.frontend_url, credentials:true};
 const {connectDB} = require('./database/connection');
@@ -21,6 +22,7 @@ const jwtSecret = process.env.jwt_secret;
 app.use(cors(corsOption));
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
 app.use('/api/v1/user',authRoutes);
 app.use('/api/v1/message',messageRoutes);
 app.use('/uploads', express.static(__dirname + '/controller/uploads'));
