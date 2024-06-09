@@ -1,6 +1,7 @@
 "use client"
 
 import { z } from "zod"
+import { CldUploadButton } from 'next-cloudinary';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button"
@@ -15,17 +16,16 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useState } from "react";
-import axios from "axios";
 
 const formSchema = z.object({
+    email: z.string().email(),
     username: z.string().min(2).max(50),
     password: z.string().min(8).max(30),
-    email: z.string().email(),
 });
 
 export function SignupForm() {
+    const cloudinaryPreset = process.env['NEXT_PUBLIC_CLOUDINARY_PRESET'];
     const [pic, setPic] = useState('');
-    const [picLoading, setPicLoading] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -37,26 +37,9 @@ export function SignupForm() {
     });
 
     function handleSubmit(values) {
-        console.log("Values are: ", values);
+        const userData = {...values,pic};
+        console.log("User data: ", userData);
     }
-
-
-    const postDetails = async(pics) => {
-        if (pics?.type !== "image/jpeg" && pics?.type !== "image/png") {
-            setPicLoading(false);
-            return;
-        }
-        setPicLoading(true);
-        const data = new FormData();
-        data.append("file", pics);
-        data.append("upload_preset", "chat-app");
-        data.append("cloud_name", "piyushproj");
-        const res = await axios.post("https://api.cloudinary.com/v1_1/piyushproj/image/upload",data);
-        console.log(res.data.url.toString());
-        setPic(res.data.url.toString());
-        setPicLoading(false);
-    };
-
 
     return (
         <Form {...form}>
@@ -100,7 +83,9 @@ export function SignupForm() {
                         <FormItem>
                             <FormLabel>Enter Password</FormLabel>
                             <FormControl>
-                                <Input {...field} type="password" placeholder="Password" />
+                                <Input {...field} type="password" placeholder="Password"/>
+                                    {/*Eye Icon*/}
+                                {/*</Input>*/}
                             </FormControl>
                             <FormDescription className={'text-gray-500'}>
                                 Password must be 8-30 characters long
@@ -114,23 +99,28 @@ export function SignupForm() {
                     name="photo"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Choose Profile Picture</FormLabel>
                             <FormControl>
-                                <Input
-                                    type="file"
-                                    p={1.5}
-                                    accept="image/*"
-                                    onChange={(e) => postDetails(e.target.files[0])}
+                                <CldUploadButton
+                                    className={'bg-gray-500 px-2 py-1 rounded-md'}
+                                    uploadPreset={cloudinaryPreset}
+                                    onError={(error)=>console.log(error)}
+                                    onSuccess={(res)=>{
+                                        const publicUrl = res?.info?.secure_url
+                                        setPic(publicUrl);
+                                    }}
                                 />
                             </FormControl>
-                            <FormDescription className={'text-gray-500'}>
-                                This is optional
+                            <FormDescription className={'text-gray-300'}>
+                                Upload profile picture. It is optional.
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button isLoading={picLoading} type="submit" className={'bg-white text-black hover:bg-gray-500 hover:text-white'}>Submit</Button>
+                <Button type="submit"
+                    className={'bg-white text-black hover:bg-gray-500 hover:text-white'}>
+                    Sign-up
+                </Button>
             </form>
         </Form>
     )
