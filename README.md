@@ -1,5 +1,5 @@
 ## Objective:
-The goal is to develop a full-stack web-based messaging platform exclusive to college students. This platform will facilitate real-time communication, ensuring privacy and security. The system will be designed to be maintainable and scalable to accommodate the growing user base.
+The goal is to develop a full-stack web-based messaging platform exclusive to college students. Goal is to provide college students to chat anonymously with other students within the college. This platform will facilitate anonymous and real-time communication, ensuring privacy and security. The system will be designed to be maintainable and scalable to accommodate the growing user base.
 
 ### Functional Requirements:
 <i><u>Note:[V2] - Denotes that these features are for future enhancement.</i></u>
