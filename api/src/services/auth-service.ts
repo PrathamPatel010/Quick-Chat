@@ -1,10 +1,11 @@
-const argon2 = require('argon2');
-const UserRepository = require('../repository/user-repository');
-const { BadRequestError } = require('../utils/AppError');
+import argon2 from 'argon2';
+import UserRepository from '../repository/user-repository';
+import { BadRequestError } from '../utils/AppError';
+
 const repo = new UserRepository();
 
 class AuthService {
-    async signUpUser(userData) {
+    async signUpUser(userData: any) {
         try {
             const userExist = await repo.userExist(userData);
             if (userExist) {
@@ -14,10 +15,10 @@ class AuthService {
             let res = await repo.create(userData);
             return res;
         } catch (error) {
-            console.log("Error occurred at user service layer ", error.message);
+            console.log("Error occurred at user service layer ", (error as Error).message);
             throw error;
         }
     }
 }
 
-module.exports = AuthService;
+export default AuthService;

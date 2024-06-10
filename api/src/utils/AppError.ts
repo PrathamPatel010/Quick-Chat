@@ -1,5 +1,9 @@
 class AppError extends Error {
-    constructor(message, statusCode) {
+    statusCode: number;
+    status: string;
+    isOperational: boolean;
+
+    constructor(message: string, statusCode: number) {
         super(message);
         this.statusCode = statusCode;
         this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
@@ -10,18 +14,18 @@ class AppError extends Error {
 }
 
 class NotFoundError extends AppError {
-    constructor(message) {
+    constructor(message?: string) {
         super(message || 'Not Found', 404);
     }
 }
 
 class BadRequestError extends AppError {
-    constructor(message) {
+    constructor(message?: string) {
         super(message || 'Bad Request', 400);
     }
 }
 
-module.exports = {
+export {
     AppError,
     NotFoundError,
     BadRequestError
