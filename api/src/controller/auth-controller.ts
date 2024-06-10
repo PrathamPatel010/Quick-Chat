@@ -20,4 +20,20 @@ async function signUp(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export default { signUp };
+async function login(req:Request, res:Response, next: NextFunction){
+    try {
+        const response = await authService.loginUser(req.body);
+        const token = generateToken({ userId: response.id, email: response.email, username: response.username });
+        const responseToBeSent = { ...response,token};
+        return res.status(200).json({
+            message: 'User Signed-In successfully',
+            success: true,
+            data: responseToBeSent,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export default { signUp,login };

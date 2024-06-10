@@ -16,7 +16,7 @@ class UserRepository {
         }
     }
 
-    async userExist(userData: any) {
+    async userExist(userData:any) {
         try {
             const { email, username } = userData;
             const user = await prismaService.user.findFirst({

@@ -1,6 +1,7 @@
 import argon2 from 'argon2';
 import UserRepository from '../repository/user-repository';
-import { BadRequestError } from '../utils/AppError';
+import {BadRequestError, NotFoundError} from '../utils/AppError';
+import 'colors';
 
 const repo = new UserRepository();
 
@@ -15,7 +16,24 @@ class AuthService {
             let res = await repo.create(userData);
             return res;
         } catch (error) {
-            console.log("Error occurred at user service layer ", (error as Error).message);
+            console.log(`Error occurred at user service layer ${(error as Error)}`.red);
+            throw error;
+        }
+    }
+
+    async loginUser(userData: {email:string,password:string}) {
+        try {
+            const user = await repo.userExist({email:userData.email});
+            if (!user){
+                throw new NotFoundError("No User found with this email");
+            }
+            const checkPass = await argon2.verify(user.password,userData.password);
+            if (!checkPass){
+                throw new BadRequestError("Credentials are wrong");
+            }
+            return user;
+        } catch (error) {
+            console.log(`Error occurred at user service layer ${(error as Error)}`.red);
             throw error;
         }
     }
