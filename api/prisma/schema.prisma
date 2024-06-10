@@ -15,8 +15,8 @@ datasource db {
 
 model User {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  email      String
-  username   String
+  email      String   @unique
+  username   String   @unique
   password   String
   pic        String?  @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
   isVerified Boolean? @default(false)
