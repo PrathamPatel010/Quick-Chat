@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { z } from "zod"
+import { z } from "zod";
 import { CldUploadButton } from 'next-cloudinary';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import {
     Form,
     FormControl,
@@ -13,9 +14,11 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import axios from "axios";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -25,8 +28,10 @@ const formSchema = z.object({
 
 export function SignupForm() {
     const cloudinaryPreset = process.env['NEXT_PUBLIC_CLOUDINARY_PRESET'];
+    const API_URL = process.env['NEXT_PUBLIC_API_URL'];
     const [pic, setPic] = useState('');
-
+    const [processing, setProcessing] = useState(false);
+    const { toast } = useToast();
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,9 +41,30 @@ export function SignupForm() {
         }
     });
 
-    function handleSubmit(values) {
-        const userData = {...values,pic};
-        console.log("User data: ", userData);
+    async function handleSubmit(values) {
+        setProcessing(true);
+        try {
+            const userData = { ...values, pic };
+            const response = await axios.post(`${API_URL}/auth/signup`, userData);
+            console.log('Response:', response.data); // Debugging line
+            if (response?.data?.success) {
+                toast({
+                    title: "User Registered Successfully!!",
+                    description: "Check your email for account verification",
+                });
+                setProcessing(false);
+            } else {
+                throw new Error('Registration failed');
+            }
+        } catch (error) {
+            console.error('Error:', error); // Debugging line
+            toast({
+                title: "Registration Failed",
+                description: "An error occurred during registration. Please try again.",
+                variant: 'destructive',
+            });
+            setProcessing(false);
+        }
     }
 
     return (
@@ -83,9 +109,7 @@ export function SignupForm() {
                         <FormItem>
                             <FormLabel>Enter Password</FormLabel>
                             <FormControl>
-                                <Input {...field} type="password" placeholder="Password"/>
-                                    {/*Eye Icon*/}
-                                {/*</Input>*/}
+                                <Input {...field} type="password" placeholder="Password" />
                             </FormControl>
                             <FormDescription className={'text-gray-500'}>
                                 Password must be 8-30 characters long
@@ -103,9 +127,9 @@ export function SignupForm() {
                                 <CldUploadButton
                                     className={'bg-gray-500 px-2 py-1 rounded-md'}
                                     uploadPreset={cloudinaryPreset}
-                                    onError={(error)=>console.log(error)}
-                                    onSuccess={(res)=>{
-                                        const publicUrl = res?.info?.secure_url
+                                    onError={(error) => console.log(error)}
+                                    onSuccess={(res) => {
+                                        const publicUrl = res?.info?.secure_url;
                                         setPic(publicUrl);
                                     }}
                                 />
@@ -117,10 +141,16 @@ export function SignupForm() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit"
-                    className={'bg-white text-black hover:bg-gray-500 hover:text-white'}>
-                    Sign-up
-                </Button>
+                {processing ? (
+                    <Button disabled>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Please wait
+                    </Button>
+                ) : (
+                    <Button type="submit" className={'bg-white text-black hover:bg-gray-500 hover:text-white'}>
+                        Sign-up
+                    </Button>
+                )}
             </form>
         </Form>
     )
