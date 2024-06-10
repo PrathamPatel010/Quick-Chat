@@ -14,11 +14,15 @@ class UserRepository{
         }
     }
 
-    async get(email){
+    async userExist(userData){
         try{
-            const user = await prismaService.user.findUnique({
+            const {email,username} = userData;
+            const user = await prismaService.user.findFirst({
                 where:{
-                    email:email
+                    OR:[
+                        {email},
+                        {username},
+                    ]
                 }
             });
             return user;
@@ -27,6 +31,7 @@ class UserRepository{
             throw error;
         }
     }
+
 }
 
 module.exports = UserRepository;
