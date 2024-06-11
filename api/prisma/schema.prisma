@@ -3,7 +3,6 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,35 +13,51 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  global     Int?     @default(0)
-  email      String   @unique
-  username   String   @unique
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  global     Int?       @default(0)
+  email      String     @unique
+  username   String     @unique
   password   String
-  pic        String?  @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
-  isAdmin    Boolean  @default(false)
-  isVerified Boolean? @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  pic        String?    @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
+  isAdmin    Boolean    @default(false)
+  isVerified Boolean?   @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  groupChats Chat[]     @relation("GroupAdmin")
+  messages   Message[]  @relation("UserMessages")
+  chats      UserChat[]
 }
 
 model Chat {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  global        Int?     @default(0)
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  global        Int?       @default(0)
   chatName      String
   isGroupChat   Boolean
-  latestMessage String   @db.ObjectId
-  groupAdmin    String   @db.ObjectId
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  latestMessage String     @db.ObjectId
+  groupAdmin    User       @relation("GroupAdmin", fields: [userId], references: [id])
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  messages      Message[]  @relation("ChatMessages")
+  users         UserChat[]
+  userId        String     @db.ObjectId
+}
+
+model UserChat {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  chatId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  chat   Chat   @relation(fields: [chatId], references: [id])
 }
 
 model Message {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   global    Int?     @default(0)
-  sender    String   @db.ObjectId
+  sender    User     @relation("UserMessages", fields: [senderId], references: [id])
+  senderId  String   @db.ObjectId
   content   String
-  chat      String   @db.ObjectId
+  chat      Chat     @relation("ChatMessages", fields: [chatId], references: [id])
+  chatId    String   @db.ObjectId
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 }

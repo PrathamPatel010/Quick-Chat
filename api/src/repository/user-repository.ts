@@ -34,6 +34,26 @@ class UserRepository {
         }
     }
 
+    async getAll(filter:{username:string},userId:string | undefined){
+        try {
+            const users = await prismaService.user.findMany({
+                where:{
+                    username: {
+                        startsWith: filter.username,
+                        mode:'insensitive'  // for ignoring case
+                    },
+                    NOT:{
+                        id: userId,
+                    }
+                }
+            });
+            return users;
+        } catch (error) {
+            console.log(`Error occurred at user repository layer ${(error as Error)}.message`.red);
+            throw error;
+        }
+    }
+
 }
 
 export default UserRepository;

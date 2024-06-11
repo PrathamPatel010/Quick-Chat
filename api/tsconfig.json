@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "*": ["types/*"]
+    },
     "target": "es2017",                                      // Update target to ES2017 for better compatibility
     "module": "commonjs",                                     // Keep module as commonjs for Node.js environment
     "outDir": "./dist",                                       // Output directory for compiled files
@@ -17,7 +21,8 @@
     "noImplicitAny": false                                    // Disable implicit any type
   },
   "include": [
-    "src/**/*.ts"                                            // Include all TypeScript files in the src directory
+    "src/**/*.ts",
+    "types/types.d.ts"
   ],
   "exclude": [
     "node_modules"                                           // Exclude node_modules from compilation
