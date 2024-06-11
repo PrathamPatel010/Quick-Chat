@@ -14,6 +14,8 @@ Note: [V2] - Denotes that these features are for future enhancement.
   - Only users with admin rights should be able to add new people to the group, remove people from the group, and change the name of the group. 
   - By default, the person who creates the group will be the admin.
 - User credentials (i.e., passwords) should be stored in a hashed form using Argon2 to ensure security.
+- [V2] Only users with verified account should be able access the chats.
+  - Account verification should be done using Email Service.   
 - [V2] All the messages should be end-to-end encrypted. All messages in the database should be encrypted.
 - [V2] Users should be able to send attachments.
 
