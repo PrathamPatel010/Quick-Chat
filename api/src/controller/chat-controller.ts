@@ -18,4 +18,24 @@ async function createOrAccessChat(req: Request, res: Response, next: NextFunctio
         next(error);
     }
 }
-export default {createOrAccessChat };
+
+//@description     Fetch all chats for a user
+//@route           GET /api/chat/
+//@access          Protected
+async function fetchChats(req:Request,res:Response,next:NextFunction){
+    try {
+        const userId =  req?.user?.id;
+        const response = await chatService.fetchChats(userId);
+        return res.status(201).json({
+            message: `Chats accessed successfully`,
+            success: true,
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export default {createOrAccessChat,fetchChats};

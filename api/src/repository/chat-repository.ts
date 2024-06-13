@@ -50,6 +50,43 @@ class ChatRepository {
         }
     }
 
+
+    async fetchChats(userId:number|undefined){
+        try {
+            const chats = await prismaService.chat.findMany({
+                where: {
+                    users: {
+                        some: {
+                            id: userId
+                        }
+                    }
+                },
+                include: {
+                    users: {
+                        select: {
+                            id: true,
+                            username: true,
+                            email: true,
+                            pic: true
+                        }
+                    },
+                    latestMessage: {
+                        include: {
+                            sender:true,
+                        }
+                    }
+                },
+                orderBy:{
+                    updatedAt:'desc'
+                }
+            });
+            return chats;
+        } catch (error) {
+            console.log("Error occurred at chat repository layer ", (error as Error).message);
+            throw error;
+        }
+    }
+
 }
 
 export default ChatRepository;

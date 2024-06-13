@@ -17,6 +17,8 @@ model User {
   sentMessages Message[] @relation("SentMessages")
   chats        Chat[]    @relation("UserChats")
   Chat         Chat[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("users")
 }
@@ -32,8 +34,10 @@ model Chat {
 
   latestMessageId Int?
   groupAdminId    Int?
-  User            User? @relation(fields: [userId], references: [id])
+  User            User?    @relation(fields: [userId], references: [id])
   userId          Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("chats")
 }
@@ -44,9 +48,11 @@ model Message {
   sender  User   @relation("SentMessages", fields: [senderId], references: [id])
   chat    Chat   @relation("ChatMessages", fields: [chatId], references: [id])
 
-  senderId Int
-  chatId   Int
-  Chat     Chat[]
+  senderId  Int
+  chatId    Int
+  Chat      Chat[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("messages")
 }

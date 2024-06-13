@@ -12,6 +12,16 @@ class ChatService {
             throw error;
         }
     }
+
+    async fetchChats(userId:number|undefined){
+        try {
+            const results = await chatRepo.fetchChats(userId);
+            return results;
+        } catch (error) {
+            console.log(`Error occurred at chat service layer ${(error as Error)}`.red);
+            throw error;
+        }
+    }
 }
 
 export default ChatService;
