@@ -29,12 +29,13 @@ Note: [V2] - Denotes that these features are for future enhancement.
 - **Storage:** Initial setup to handle data for up to 10,000 users with scope for expansion.
 - **Traffic:** System designed to handle up to 1000 concurrent users initially with the ability to scale.
 
-**Choosing Database:**
-Based on our requirements for flexibility in data structures and the need for easier scalability, MongoDB with Prisma could indeed be a better choice. Additionally, its support for horizontal scaling through sharding can help manage increased loads effectively as your application grows.
+### Choosing Database:**
+Based on our requirements for complex relationships, scalability, and support for ACID transactions, We can use PostgresSQL. 
+PostgreSQL's strong support for relational data structures and its capability for horizontal scalability through clustering and partitioning make it ideal for our application.
 
 ### Tech Stack:
 - **Backend:** TypeScript with Node.js and Express.js
-- **Database:** MongoDB with Prisma ORM
+- **Database:** PostgresSQL with Prisma ORM
 - **Real-Time Communication:** Socket.io
 - **Frontend:** Next.js
 - **Styling:** Tailwind CSS, shadcn/ui
