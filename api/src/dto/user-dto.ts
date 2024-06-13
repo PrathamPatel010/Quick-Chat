@@ -7,8 +7,3 @@ export interface CreateUserDto {
     createdAt?: Date;
     updatedAt?: Date;
 }
-
-export interface LoginUserDto {
-    email: string,
-    password: string,
-}

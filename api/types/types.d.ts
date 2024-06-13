@@ -2,14 +2,12 @@ import { Request as ExpressRequest } from 'express';
 
 // Define the User interface
 export interface User {
-    id: string;
+    id: number;
     email: string;
     username: string;
     iat?: string;
     pic?: string,
-    isAdmin?: boolean,
     isVerified?: boolean
-
 }
 
 // Merge the User interface with the ExpressRequest interface
