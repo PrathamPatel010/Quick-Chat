@@ -8,11 +8,11 @@ datasource db {
 }
 
 model User {
-  id           BigInt    @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   username     String    @unique
   email        String    @unique
   password     String
-  pic          String?
+  pic          String?   @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
   isVerified   Boolean   @default(false)
   sentMessages Message[] @relation("SentMessages")
   chats        Chat[]    @relation("UserChats")
@@ -22,7 +22,7 @@ model User {
 }
 
 model Chat {
-  id            BigInt   @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   chatName      String
   isGroupChat   Boolean  @default(false)
   latestMessage Message? @relation(fields: [latestMessageId], references: [id])
@@ -30,22 +30,22 @@ model Chat {
   users    User[]    @relation("UserChats")
   messages Message[] @relation("ChatMessages")
 
-  latestMessageId BigInt?
-  groupAdminId    BigInt?
-  User            User?   @relation(fields: [userId], references: [id])
-  userId          BigInt?
+  latestMessageId Int?
+  groupAdminId    Int?
+  User            User? @relation(fields: [userId], references: [id])
+  userId          Int?
 
   @@map("chats")
 }
 
 model Message {
-  id      BigInt @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   content String
   sender  User   @relation("SentMessages", fields: [senderId], references: [id])
   chat    Chat   @relation("ChatMessages", fields: [chatId], references: [id])
 
-  senderId BigInt
-  chatId   BigInt
+  senderId Int
+  chatId   Int
   Chat     Chat[]
 
   @@map("messages")

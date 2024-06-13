@@ -5,12 +5,11 @@ const authService = new AuthService();
 
 async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
-        console.log(req.body);
         const response = await authService.signUpUser(req.body);
         return res.status(201).json({
             message: 'User registered successfully',
             success: true,
-            data: {},
+            data: response,
             error: {}
         });
     } catch (error) {
@@ -20,12 +19,11 @@ async function signUp(req: Request, res: Response, next: NextFunction) {
 
 async function login(req:Request, res:Response, next: NextFunction){
     try {
-        const id1 = req.body;
         const response = await authService.loginUser(req.body);
         return res.status(200).json({
             message: 'User Signed-In successfully',
             success: true,
-            data: {},
+            data: response,
             error: {}
         });
     } catch (error) {

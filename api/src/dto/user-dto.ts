@@ -7,3 +7,9 @@ export interface CreateUserDto {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export type LoginUserDto = {
+    email: string,
+    password: string,
+}
+
